@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'Instagram',
           theme: ThemeData(
-            primarySwatch: Colors.blue,
+            primarySwatch: Colors.blueGrey,
             scaffoldBackgroundColor: Colors.grey[50],
             visualDensity: VisualDensity.adaptivePlatformDensity,
             appBarTheme: AppBarTheme(

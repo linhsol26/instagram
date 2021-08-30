@@ -7,7 +7,6 @@ class Failure extends Equatable {
   const Failure({this.code = '', this.message = ''});
 
   @override
-  // TODO: implement stringify
   bool get stringify => true;
 
   @override

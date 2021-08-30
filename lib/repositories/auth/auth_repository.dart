@@ -28,9 +28,9 @@ class AuthRepository extends BaseAuthRepository {
           email: email, password: password);
       return credential.user;
     } on auth.FirebaseAuthException catch (err) {
-      return throw Failure(code: err.code, message: err.message);
+      throw Failure(code: err.code, message: err.message);
     } on PlatformException catch (err) {
-      return throw Failure(code: err.code, message: err.message);
+      throw Failure(code: err.code, message: err.message);
     }
   }
 
@@ -51,9 +51,9 @@ class AuthRepository extends BaseAuthRepository {
       });
       return user;
     } on auth.FirebaseAuthException catch (err) {
-      return throw Failure(code: err.code, message: err.message);
+      throw Failure(code: err.code, message: err.message);
     } on PlatformException catch (err) {
-      return throw Failure(code: err.code, message: err.message);
+      throw Failure(code: err.code, message: err.message);
     }
   }
 

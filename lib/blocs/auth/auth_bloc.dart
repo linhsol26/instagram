@@ -3,21 +3,21 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
-import 'package:instagram/blocs/blocs.dart';
 import 'package:instagram/repositories/repositories.dart';
+import 'package:meta/meta.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _authRepository;
-  StreamSubscription<auth.User?>? _userSubcription;
+  StreamSubscription<auth.User> _userSubcription;
 
-  AuthBloc({required AuthRepository authRepository})
+  AuthBloc({@required AuthRepository authRepository})
       : _authRepository = authRepository,
         super(AuthState.unknown()) {
     _userSubcription = _authRepository.user
-        .listen((user) => add(AuthUserChanged(user: user!)));
+        .listen((auth.User user) => add(AuthUserChanged(user: user)));
   }
 
   @override
@@ -25,11 +25,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthEvent event,
   ) async* {
     if (event is AuthUserChanged) {
-      yield AuthState.authenticated(user: event.user);
+      yield* _mapAuthUserChangedToState(event);
     } else if (event is AuthLogoutRequested) {
       await _authRepository.logOut();
-    } else {
-      yield AuthState.unauthenticated();
     }
   }
 
@@ -37,5 +35,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> close() {
     _userSubcription?.cancel();
     return super.close();
+  }
+
+  Stream<AuthState> _mapAuthUserChangedToState(AuthUserChanged event) async* {
+    yield event.user != null
+        ? AuthState.authenticated(user: event.user)
+        : AuthState.unauthenticated();
   }
 }

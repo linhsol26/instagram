@@ -8,9 +8,9 @@ class Failure extends Equatable {
 
   @override
   // TODO: implement stringify
-  bool? get stringify => true;
+  bool get stringify => true;
 
   @override
   // TODO: implement props
-  List<Object?> get props => [code, message];
+  List<Object> get props => [code, message];
 }

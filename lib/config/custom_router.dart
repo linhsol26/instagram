@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:instagram/screens/login/login_screen.dart';
-import 'package:instagram/screens/nav/nav_screen.dart';
-import 'package:instagram/screens/splash/splash_screen.dart';
+import 'package:instagram/screens/screens.dart';
 
 class CustomRouter {
   static Route onGeneratedRoute(RouteSettings settings) {
@@ -16,6 +14,8 @@ class CustomRouter {
         return LoginScreen.route();
       case NavScreen.routeName:
         return NavScreen.route();
+      case SignUpScreen.routeName:
+        return SignUpScreen.route();
       default:
         return _errorRoute();
     }

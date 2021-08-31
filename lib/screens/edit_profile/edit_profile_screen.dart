@@ -130,14 +130,12 @@ class EditProfileScreen extends StatelessWidget {
     final pickedFile = await ImageHelper.pickImageFromGallery(
         context: context, cropStyle: CropStyle.circle, title: 'Profile Image');
     if (pickedFile != null) {
-      context
-          .read<EditProfileCubit>()
-          .profileImageChanged(File(pickedFile.path));
+      context.read<EditProfileCubit>().profileImageChanged(pickedFile);
     }
   }
 
-  _submitForm(BuildContext context, bool isSubmmiting) {
-    if (_formKey.currentState.validate() && !isSubmmiting) {
+  _submitForm(BuildContext context, bool isSubmitting) {
+    if (_formKey.currentState.validate() && !isSubmitting) {
       context.read<EditProfileCubit>().submit();
     }
   }

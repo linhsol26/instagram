@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:instagram/config/paths.dart';
@@ -45,7 +47,7 @@ class Comment extends Equatable {
       'author':
           FirebaseFirestore.instance.collection(Paths.users).doc(author.id),
       'content': content,
-      'date': Timestamp.fromDate(date).toString(),
+      'date': Timestamp.fromDate(date),
     };
   }
 
@@ -58,12 +60,11 @@ class Comment extends Equatable {
       final authorDoc = await authorRef.get();
       if (authorDoc.exists) {
         return Comment(
-          id: doc.id,
-          postId: data['postId'] ?? '',
-          author: User.fromDocument(authorDoc),
-          content: data['content'] ?? '',
-          date: (data['date'] as Timestamp)?.toDate(),
-        );
+            id: doc.id,
+            postId: data['postId'] ?? '',
+            author: User.fromDocument(authorDoc),
+            content: data['content'] ?? '',
+            date: (data['date'] as Timestamp)?.toDate());
       }
     }
     return null;

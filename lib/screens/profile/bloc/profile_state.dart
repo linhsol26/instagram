@@ -4,7 +4,7 @@ enum ProfileStatus { initial, loading, loaded, error }
 
 class ProfileState extends Equatable {
   final User user;
-  // final List<Post> posts;
+  final List<Post> posts;
   final bool isCurrentUser;
   final bool isGridView;
   final bool isFollowing;
@@ -13,6 +13,7 @@ class ProfileState extends Equatable {
 
   const ProfileState(
       {@required this.isCurrentUser,
+      @required this.posts,
       @required this.isGridView,
       @required this.isFollowing,
       @required this.status,
@@ -21,21 +22,23 @@ class ProfileState extends Equatable {
 
   factory ProfileState.initial() => const ProfileState(
       isCurrentUser: false,
-      isGridView: false,
+      isGridView: true,
       isFollowing: false,
+      posts: [],
       status: ProfileStatus.initial,
       failure: Failure(),
       user: User.emptyUser);
 
   @override
   List<Object> get props =>
-      [user, isCurrentUser, isGridView, status, isFollowing, failure];
+      [user, isCurrentUser, isGridView, status, isFollowing, failure, posts];
 
   ProfileState copyWith({
     User user,
     bool isCurrentUser,
     bool isGridView,
     bool isFollowing,
+    List<Post> posts,
     ProfileStatus status,
     Failure failure,
   }) {
@@ -46,6 +49,7 @@ class ProfileState extends Equatable {
       isFollowing: isFollowing ?? this.isFollowing,
       status: status ?? this.status,
       failure: failure ?? this.failure,
+      posts: posts ?? this.posts,
     );
   }
 }

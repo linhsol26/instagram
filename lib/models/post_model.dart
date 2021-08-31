@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:instagram/config/paths.dart';
@@ -50,7 +52,7 @@ class Post extends Equatable {
       'imageUrl': imageUrl,
       'caption': caption,
       'likes': likes,
-      'date': Timestamp.fromDate(date).toString(),
+      'date': Timestamp.fromDate(date),
     };
   }
 
@@ -63,13 +65,12 @@ class Post extends Equatable {
       final authorDoc = await authorRef.get();
       if (authorDoc.exists) {
         return Post(
-          id: doc.id,
-          author: User.fromDocument(authorDoc),
-          imageUrl: data['imageUrl'] ?? '',
-          caption: data['caption'] ?? '',
-          likes: (data['likes'] ?? 0).toInt(),
-          date: (data['date'] as Timestamp)?.toDate(),
-        );
+            id: doc.id,
+            author: User.fromDocument(authorDoc),
+            imageUrl: data['imageUrl'] ?? '',
+            caption: data['caption'] ?? '',
+            likes: (data['likes'] ?? 0).toInt(),
+            date: (data['date'] as Timestamp)?.toDate());
       }
     }
     return null;

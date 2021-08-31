@@ -1,13 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram/blocs/blocs.dart';
+import 'package:instagram/repositories/repositories.dart';
 import 'package:instagram/screens/profile/bloc/profile_bloc.dart';
 import 'package:instagram/widgets/widgets.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreenArgs {
+  final String userId;
+
+  ProfileScreenArgs({@required this.userId});
+}
+
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key key}) : super(key: key);
 
   static const routeName = '/profile';
+
+  static Route route({@required ProfileScreenArgs args}) {
+    return MaterialPageRoute(
+        settings: const RouteSettings(name: routeName),
+        builder: (context) => BlocProvider<ProfileBloc>(
+              create: (_) => ProfileBloc(
+                  userRepository: context.read<UserRepository>(),
+                  postRepository: context.read<PostRepository>(),
+                  authBloc: context.read<AuthBloc>())
+                ..add(ProfileLoadUser(
+                    userId: context.read<AuthBloc>().state.user.uid)),
+              child: ProfileScreen(),
+            ));
+  }
+
+  @override
+  _ProfileScreenState createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen>
+    with SingleTickerProviderStateMixin {
+  TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ProfileBloc, ProfileState>(
@@ -34,7 +70,33 @@ class ProfileScreen extends StatelessWidget {
                 )
             ],
           ),
-          body: CustomScrollView(
+          body: _buildBody(state),
+        );
+      },
+    );
+  }
+
+  Widget _buildBody(ProfileState state) {
+    switch (state.status) {
+      // case ProfileStatus.initial:
+      //   return Center(
+      //       child: CircularProgressIndicator(
+      //     color: Colors.purple,
+      //   ));
+      case ProfileStatus.loading:
+        return Center(
+            child: CircularProgressIndicator(
+          color: Colors.purple,
+        ));
+      default:
+        return RefreshIndicator(
+          onRefresh: () async {
+            context
+                .read<ProfileBloc>()
+                .add(ProfileLoadUser(userId: state.user.id));
+            return true;
+          },
+          child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
                 child: Column(
@@ -50,7 +112,7 @@ class ProfileScreen extends StatelessWidget {
                           ProfileStats(
                             isCurrentUser: state.isCurrentUser,
                             isFollowing: state.isFollowing,
-                            posts: 0,
+                            posts: state.posts.length,
                             followers: state.user.followers,
                             following: state.user.following,
                           ),
@@ -68,10 +130,63 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
               ),
+              SliverToBoxAdapter(
+                child: TabBar(
+                  controller: _tabController,
+                  labelColor: Theme.of(context).primaryColor,
+                  unselectedLabelColor: Colors.grey,
+                  tabs: [
+                    Tab(icon: Icon(Icons.grid_on, size: 28.0)),
+                    Tab(icon: Icon(Icons.list, size: 28.0)),
+                  ],
+                  indicatorWeight: 3.0,
+                  onTap: (i) => context
+                      .read<ProfileBloc>()
+                      .add(ProfileToggleGridView(isGridView: i == 0)),
+                ),
+              ),
+              state.isGridView
+                  ? SliverGrid(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        mainAxisSpacing: 2.0,
+                        crossAxisSpacing: 2.0,
+                      ),
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final post = state.posts[index];
+                          return GestureDetector(
+                            onTap: () {},
+                            child: Image.network(
+                              post.imageUrl,
+                              fit: BoxFit.cover,
+                            ),
+                          );
+                        },
+                        childCount: state.posts.length,
+                      ),
+                    )
+                  : SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final post = state.posts[index];
+                          return PostView(
+                            post: post,
+                            isLike: false,
+                          );
+                        },
+                        childCount: state.posts.length,
+                      ),
+                    ),
             ],
           ),
         );
-      },
-    );
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _tabController.dispose();
   }
 }

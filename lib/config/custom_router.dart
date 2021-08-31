@@ -21,6 +21,13 @@ class CustomRouter {
     }
   }
 
+  static Route onGenerateNestedRoute(RouteSettings settings) {
+    switch (settings.name) {
+      default:
+        return _errorRoute();
+    }
+  }
+
   static _errorRoute() {
     return MaterialPageRoute(
       settings: const RouteSettings(name: '/error'),

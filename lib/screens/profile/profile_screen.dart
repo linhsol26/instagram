@@ -24,8 +24,7 @@ class ProfileScreen extends StatefulWidget {
                   userRepository: context.read<UserRepository>(),
                   postRepository: context.read<PostRepository>(),
                   authBloc: context.read<AuthBloc>())
-                ..add(ProfileLoadUser(
-                    userId: context.read<AuthBloc>().state.user.uid)),
+                ..add(ProfileLoadUser(userId: args.userId)),
               child: ProfileScreen(),
             ));
   }

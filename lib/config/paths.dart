@@ -7,5 +7,5 @@ class Paths {
 
   static const String postComments = 'postsComments';
   static const String userFollowers = 'userFollowers';
-  static const String userFollowing = 'userF ollowing';
+  static const String userFollowing = 'userFollowing';
 }

@@ -8,7 +8,15 @@ import 'package:instagram/extensions/extensions.dart';
 class PostView extends StatelessWidget {
   final Post post;
   final bool isLike;
-  const PostView({Key key, @required this.post, @required this.isLike})
+  final VoidCallback onLike;
+  final bool recentlyLike;
+
+  const PostView(
+      {Key key,
+      @required this.post,
+      @required this.isLike,
+      @required this.onLike,
+      this.recentlyLike = false})
       : super(key: key);
 
   @override
@@ -40,7 +48,7 @@ class PostView extends StatelessWidget {
           ),
         ),
         GestureDetector(
-          onDoubleTap: () {},
+          onDoubleTap: onLike,
           child: CachedNetworkImage(
               imageUrl: post.imageUrl,
               fit: BoxFit.cover,
@@ -53,7 +61,7 @@ class PostView extends StatelessWidget {
               icon: !isLike
                   ? Icon(Icons.favorite_outline)
                   : Icon(Icons.favorite, color: Colors.red),
-              onPressed: () {},
+              onPressed: onLike,
             ),
             IconButton(
               icon: Icon(Icons.comment_outlined),
@@ -67,7 +75,7 @@ class PostView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                '${post.likes} likes',
+                '${recentlyLike ? post.likes + 1 : post.likes} likes',
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               SizedBox(height: 4.0),

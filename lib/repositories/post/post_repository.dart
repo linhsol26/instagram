@@ -48,4 +48,88 @@ class PostRepository extends BasePostRepository {
         .map((event) =>
             event.docs.map((doc) => Post.fromDocument(doc)).toList());
   }
+
+  @override
+  Future<List<Post>> getUserFeed(
+      {@required String userId, String lastPostId}) async {
+    QuerySnapshot postsSnap;
+    if (lastPostId == null) {
+      postsSnap = await _firebaseFirestore
+          .collection(Paths.feeds)
+          .doc(userId)
+          .collection(Paths.userFeed)
+          .orderBy('date', descending: true)
+          .limit(3)
+          .get();
+    } else {
+      final lastPostDoc = await _firebaseFirestore
+          .collection(Paths.feeds)
+          .doc(userId)
+          .collection(Paths.userFeed)
+          .doc(lastPostId)
+          .get();
+
+      if (!lastPostDoc.exists) {
+        return [];
+      }
+
+      postsSnap = await _firebaseFirestore
+          .collection(Paths.feeds)
+          .doc(userId)
+          .collection(Paths.userFeed)
+          .orderBy('date', descending: true)
+          .startAfterDocument(lastPostDoc)
+          .limit(3)
+          .get();
+    }
+    final posts = Future.wait(
+        postsSnap.docs.map((doc) => Post.fromDocument(doc)).toList());
+    return posts;
+  }
+
+  @override
+  void createLike({Post post, String userId}) {
+    _firebaseFirestore.collection(Paths.posts).doc(post.id).update({
+      'likes': FieldValue.increment(1),
+    });
+
+    _firebaseFirestore
+        .collection(Paths.likes)
+        .doc(post.id)
+        .collection(Paths.postLikes)
+        .doc(userId)
+        .set({});
+  }
+
+  @override
+  void deleteLike({String postId, String userId}) {
+    _firebaseFirestore.collection(Paths.posts).doc(postId).update({
+      'likes': FieldValue.increment(-1),
+    });
+
+    _firebaseFirestore
+        .collection(Paths.likes)
+        .doc(postId)
+        .collection(Paths.postLikes)
+        .doc(userId)
+        .delete();
+  }
+
+  @override
+  Future<Set<String>> getLikedPostIds({String userId, List<Post> posts}) async {
+    final postIds = <String>{};
+
+    for (var post in posts) {
+      final likeDoc = await _firebaseFirestore
+          .collection(Paths.likes)
+          .doc(post.id)
+          .collection(Paths.postLikes)
+          .doc(userId)
+          .get();
+      if (likeDoc.exists) {
+        postIds.add(post.id);
+      }
+    }
+    return postIds;
+  }
 }

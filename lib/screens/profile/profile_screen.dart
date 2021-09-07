@@ -5,6 +5,7 @@ import 'package:instagram/blocs/blocs.dart';
 import 'package:instagram/cubits/cubits.dart';
 import 'package:instagram/repositories/repositories.dart';
 import 'package:instagram/screens/profile/bloc/profile_bloc.dart';
+import 'package:instagram/screens/screens.dart';
 import 'package:instagram/widgets/widgets.dart';
 
 class ProfileScreenArgs {
@@ -160,7 +161,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                         (context, index) {
                           final post = state.posts[index];
                           return GestureDetector(
-                            onTap: () {},
+                            onTap: () => Navigator.of(context).pushNamed(
+                                CommentScreen.routeName,
+                                arguments: CommentsStringArgs(post: post)),
                             child: CachedNetworkImage(
                               imageUrl: post.imageUrl,
                               fit: BoxFit.cover,

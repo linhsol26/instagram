@@ -6,10 +6,12 @@ class Paths {
   static const String following = 'following';
   static const String feeds = 'feeds';
   static const String likes = 'likes';
+  static const String notifications = 'notifications';
 
   static const String postComments = 'postsComments';
   static const String userFollowers = 'userFollowers';
   static const String userFollowing = 'userFollowing';
   static const String userFeed = 'userFeed';
   static const String postLikes = 'postLikes';
+  static const String userNotifications = 'userNotifications';
 }

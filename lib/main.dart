@@ -38,6 +38,9 @@ class MyApp extends StatelessWidget {
         RepositoryProvider(
           create: (_) => PostRepository(),
         ),
+        RepositoryProvider(
+          create: (_) => NotificationRepository(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
